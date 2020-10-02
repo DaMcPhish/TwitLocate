@@ -113,5 +113,4 @@ try:
         print(bcolors.WARNYellow + "Saved to ", outfile + bcolors.RESET)
 
 except ImportError:
-    print('''Please install the requirements:
-            pip install -r requirements.txt''')
+    print('''Install the requirements''')
