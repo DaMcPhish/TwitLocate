@@ -1,0 +1,3 @@
+Boulder:
+Latitude : 40.0160921
+Longitude :  -105.2812196
