@@ -1,8 +1,31 @@
 #!/usr/bin/python
 
+# from pynput import keyboard
+#
+# break_script = False
+# def on_press(key):
+#     global break_script
+#     if key == keyboard.Key.end:
+#         print('Ending....')
+#         if result_count == 1:
+#             print(bcolors.WARNYellow + "Got %d result" % result_count + bcolors.RESET)
+#             csvfile.close()
+#             print(bcolors.WARNYellow + "Saved to ", outfile + bcolors.RESET)
+#         elif result_count == 0:
+#             print(
+#                 bcolors.WARNYellow + "Didn't get any results try another Latitude and  Longitude" + bcolors.RESET)
+#         else:
+#             print(bcolors.WARNYellow + "Got %d results" % result_count + bcolors.RESET)
+#             csvfile.close()
+#             print(bcolors.WARNYellow + "Saved to ", outfile + bcolors.RESET)
+#         # break_script = True
+#         idfile.close()
+#         csvfile.close()
+#         exit(5)
+
+
 try:
     from cffi.setuptools_ext import execfile
-    import twitter as Twitter
     from twitter import *
     import sys
     import csv
@@ -43,8 +66,7 @@ try:
     config = {}
     execfile("conf.txt", config)
 
-    twitter = Twitter.Api(
-        auth=OAuth(config["access_key"], config["access_secret"], config["consumer_key"], config["consumer_secret"]))
+    twitter = Twitter(auth=OAuth(config["access_key"], config["access_secret"], config["consumer_key"], config["consumer_secret"]))
 
     file_exists1 = os.path.isfile("output.csv")
     file_exists2 = os.path.isfile("IDLog.csv")
@@ -61,24 +83,24 @@ try:
         row = ["------------------------------------------------------------------------"]
         csvwriter.writerow(row)
     if (file_exists2 is not True):
-        row = ["ID"]
-        csvwriter.writerow(row)
+        idrow = ["ID"]
+        csvwriter.writerow(idrow)
 
     result_count = 0
     while result_count < num_results:
         query = twitter.search.tweets(q="", geocode="%f,%f,%dkm" % (latitude, longitude, max_range), num_results=100)
         for result in query["statuses"]:
             # only process a result if it has a geolocation
-            if result["geo"]:
-                with open(known_id) as f:
-                    for line in f:
-                        if line in result:
-                            continue
-                        else:
-                            idRow = result["id"]
-                            idwriter.writerow(idRow)
-
-                    else:
+             if result["geo"]:
+            #     with open(known_id) as f:
+            #         for line in f:
+            #             if line in result:
+            #                 continue
+            #             else:
+            #                 idRow = str(result["id"])
+            #                 idwriter.writerow(idRow)
+            #
+            #         else:
                         user = result["user"]["screen_name"]
                         text = result["text"]
                         text = text.encode('ascii', 'replace')
@@ -99,7 +121,7 @@ try:
                         print(' ')
                         csvwriter.writerow(row)
                         result_count += 1
-                        time.sleep(.35)
+                        time.sleep(5.05)    # Rate limit padding < 15 minute window
 
     if result_count == 1:
         print(bcolors.WARNYellow + "Got %d result" % result_count + bcolors.RESET)
